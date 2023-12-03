@@ -19,7 +19,7 @@ public class main {
         
         menuChoice = menu(connection);
         
-        
+        //hovienko846851jnwggjgnjgejkajavnasvsnasvnkasnla
         
     }
     
@@ -66,6 +66,7 @@ public class main {
         String password = scanner.next();
         
         boolean logged = Server.verifyLogIn(connection, email, password);
+        
         
         return logged;
     }
