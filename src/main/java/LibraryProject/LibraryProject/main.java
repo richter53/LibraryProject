@@ -15,70 +15,16 @@ public class main {
         Scanner scanner = new Scanner(System.in);
         int menuChoice;
 
-        Connection connection = establishConnection("jdbc:mysql://localhost:3306/mydb", "root", "");
+        Connection connection = Server.establishConnection("jdbc:mysql://localhost:3306/mydb", "root", "");
         
         menuChoice = menu(connection);
         
-
         
         
-        
-        //String query = "SELECT * FROM ";
-        /*
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-                Statement statement = connection.createStatement();	
-                ResultSet resultSet = statement.executeQuery(query)) {
-
-               // Print column headers
-               for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                   System.out.print(resultSet.getMetaData().getColumnName(i) + "\t");
-               }
-               System.out.println();
-
-               // Print data
-               while (resultSet.next()) {
-                   for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                       System.out.print(resultSet.getString(i) + "\t");
-                   }
-                   System.out.println();
-               }
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        } catch (SQLException e) {
-            System.err.println("Error connecting to the database: " + e.getMessage());
-            e.printStackTrace();
-        }*/
     }
     
     
 
-    public static Connection establishConnection(String url, String username, String password) {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(url, username, password);
-            System.out.println("Connected to the database!");
-        } catch (SQLException e) {
-            System.err.println("Error establishing the database connection: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return connection;
-    }
     
     // *************** MENU - LOG IN / SIGN IN ***************
     public static int menu(Connection connection) {
@@ -115,42 +61,19 @@ public class main {
 
         System.out.println("Log In");
         System.out.print("Enter your email: ");
-        String userEmail  = scanner.next();
+        String email = scanner.next();
         System.out.print("Enter your password: ");
-        String passwordCheck = scanner.next();
-
-        String query = "SELECT * FROM users WHERE email = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, userEmail);
-
-            // Execute the query
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    // User found, compare passwords
-                    String storedPassword = resultSet.getString("password");
-                    
-                    if (BCrypt.checkpw(passwordCheck, storedPassword)) {
-                        System.out.println("Authentication successful!");
-                        return true;
-                    } else {
-                        System.out.println("Authentication failed. Passwords do not match.");
-                        return false;
-                    }
-                } else {
-                    System.out.println("User not found.");
-                }
-            }
-        }
-        catch (SQLException e) {
-            System.err.println("Error executing the query: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
+        String password = scanner.next();
+        
+        boolean logged = Server.verifyLogIn(connection, email, password);
+        
+        return logged;
     }
     
     private static void createAccount(Connection connection) {
         Scanner scanner = new Scanner(System.in);
-
+        boolean flag = true;
+        
         System.out.println("Create Account");
         System.out.print("Enter your name: ");
         String name = scanner.next();
@@ -158,11 +81,34 @@ public class main {
         String surname = scanner.next();
         System.out.print("Enter your email: ");
         String email = scanner.next();
-        while(!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
-            System.out.print("Wrong format try again: ");
-        	email = scanner.next();
-    	}
-        System.out.print("Enter your password: ");
+	    while(flag) {
+	        while(!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+	            System.out.print("Wrong format try again: ");
+	        	email = scanner.next();
+	    	}
+
+	        String query = "SELECT * FROM users WHERE email = ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, email);
+
+	            // Execute the query
+	            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	                if (resultSet.next()) {
+	                	System.out.print("E-mail already in use!\nTry again: ");
+	                	email = scanner.next();
+	                } else {
+	                    System.out.println("funguje.");
+	                    flag = false;
+	                }
+	            }
+	        }
+	        catch (SQLException e) {
+	            System.err.println("Error executing the query: " + e.getMessage());
+	            e.printStackTrace();
+	        }
+	        
+	    }
+	    System.out.print("Enter your password: ");
         String password = "a", confirmPassword = "b";
         while(!password.equals(confirmPassword)) {
 	        password = scanner.next();
