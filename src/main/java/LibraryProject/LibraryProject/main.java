@@ -1,6 +1,9 @@
 package LibraryProject.LibraryProject;
 
 import org.mindrot.jbcrypt.BCrypt;
+
+import com.mysql.cj.protocol.Resultset;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,7 +22,11 @@ public class main {
         
         user_id = menu(connection);
         System.out.println(user_id);
-        
+    	String query = "SELECT * FROM users WHERE id_user = ?";
+    	resultset 
+    	premenna = Resultset.getboolean("spravca");
+    	if()
+
     }
     
     
@@ -42,7 +49,7 @@ public class main {
                     return logIn(connection);
                 case "2":
                     createAccount(connection);
-                    return 2;
+                    break;
                 case "3":
                     System.out.println("Exiting the program. Goodbye!");
                     System.exit(0);
