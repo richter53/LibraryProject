@@ -76,24 +76,7 @@ public class main {
         String password = scanner.next();
         boolean logged = Server.verifyLogIn(connection, email, password);
         if(logged) {
-        	String query = "SELECT * FROM users WHERE email = ?";
-	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-	            preparedStatement.setString(1, email);
-
-	            // Execute the query
-	            try (ResultSet user = preparedStatement.executeQuery()) {
-	                if (user.next()) {
-	                	System.out.print("User returned.");
-	                	return user.getInt("id_user");
-	                } else {
-	                    System.out.println("User doesn't exist.");
-	                }
-	            }
-	        }
-	        catch (SQLException e) {
-	            System.err.println("Error executing the query: " + e.getMessage());
-	            e.printStackTrace();
-	        }
+        	return Server.getUserID(connection, email);
         }
 		return -1;
         

@@ -78,7 +78,28 @@ public class Server {
         }
         return true;
     }
-    
+
+    public static int getUserID(Connection connection, String email) {
+    	String query = "SELECT * FROM users WHERE email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+
+            // Execute the query
+            try (ResultSet user = preparedStatement.executeQuery()) {
+                if (user.next()) {
+                	System.out.print("User returned.");
+                	return user.getInt("id_user");
+                } else {
+                    System.out.println("User doesn't exist.");
+                }
+            }
+        }
+        catch (SQLException e) {
+            System.err.println("Error executing the query: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
     public static void insertUser(Connection connection, String email, String name, String surname, String password) {
 
         String query = "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)";
