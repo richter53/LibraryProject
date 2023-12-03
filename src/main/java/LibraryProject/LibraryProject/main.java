@@ -11,14 +11,14 @@ import java.util.Scanner;
 
 public class main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        int menuChoice;
+        int user_id;
 
         Connection connection = Server.establishConnection("jdbc:mysql://localhost:3306/mydb", "root", "");
         
-        menuChoice = menu(connection);
-        
+        user_id = menu(connection);
+        System.out.println(user_id);
         
     }
     
@@ -26,7 +26,7 @@ public class main {
 //hsbahvashbvhiasbvihabvia
     
     // *************** MENU - LOG IN / SIGN IN ***************
-    public static int menu(Connection connection) {
+    public static int menu(Connection connection) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Welcome to the User Authentication System!");
@@ -39,11 +39,7 @@ public class main {
 
             switch (choice) {
                 case "1":
-                    boolean logged = logIn(connection);
-                    if(logged) {
-                    	return 1;
-                    }
-                    break;
+                    return logIn(connection);
                 case "2":
                     createAccount(connection);
                     return 2;
@@ -55,9 +51,9 @@ public class main {
             }
         }
     }
-    private static boolean logIn(Connection connection) {
+    private static int logIn(Connection connection) {
         Scanner scanner = new Scanner(System.in);
-
+        
         System.out.println("Log In");
         System.out.print("Enter your email: ");
         String email = scanner.next();
@@ -65,9 +61,28 @@ public class main {
         String password = scanner.next();
         
         boolean logged = Server.verifyLogIn(connection, email, password);
+        if(logged) {
+        	String query = "SELECT * FROM users WHERE email = ?";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, email);
+
+	            // Execute the query
+	            try (ResultSet user = preparedStatement.executeQuery()) {
+	                if (user.next()) {
+	                	System.out.print("User returned.");
+	                	return user.getInt("id_user");
+	                } else {
+	                    System.out.println("User doesn't exist.");
+	                }
+	            }
+	        }
+	        catch (SQLException e) {
+	            System.err.println("Error executing the query: " + e.getMessage());
+	            e.printStackTrace();
+	        }
+        }
+		return 0;
         
-        
-        return logged;
     }
     
     private static void createAccount(Connection connection) {
