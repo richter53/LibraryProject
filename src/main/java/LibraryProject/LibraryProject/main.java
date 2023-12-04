@@ -131,11 +131,14 @@ public class main {
                     viewFriendsBooks(connection, user_id);  // Change to viewLibrary instead of viewFriendsBooks
                     break;
                 case "3":
-                    //addUser(connection);
+                    AdminCreatesAccount(connection);
                     break;
                 case "4":
-                    //removeUser(connection);
-                    break;
+                	 System.out.print("Enter the email to remove: ");
+                	    String userEmailToRemove = scanner.next();
+                	    Server.deleteUser(connection, userEmailToRemove);
+                	    break;
+                   
                 case "5":
                     // Logging out, break the loop to return to the login menu
                     adminLoggedIn = false;
@@ -214,6 +217,48 @@ public class main {
 	        
         Server.insertUser(connection, email, name, surname, password);
     }
+    
+    private static void AdminCreatesAccount(Connection connection) {
+        Scanner scanner = new Scanner(System.in);
+        boolean flag = true, fFlag = true;
+        
+        System.out.println("Create an Account");
+        System.out.print("Enter a name for the user: ");
+        String name = scanner.next();
+        System.out.print("Enter a surname for the user: ");
+        String surname = scanner.next();
+        System.out.print("Enter an email for the user: ");
+        String email = scanner.next();
+        while(flag) {
+        	if(fFlag) {
+        		fFlag = false;
+        	}else {
+            	email = scanner.next();	
+        	}
+	        while(!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+	            System.out.print("Wrong format try again: ");
+	        	email = scanner.next();
+	    	}
+	        flag = Server.verifyEmailUse(connection, email);
+        }
+        System.out.print("Enter a password for the user: ");
+        String password = "a", confirmPassword = "b";
+        while(!password.equals(confirmPassword)) {
+	        password = scanner.next();
+	        while(!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+	            System.out.print("Password isn't secure enough! Try again: ");
+	            password = scanner.next();
+	    	}
+	        System.out.print("Confirm a password for the user: ");
+	        confirmPassword = scanner.next();
+	        
+	        if(!password.equals(confirmPassword)) {
+        		System.out.print("Passwords don't match!\nEnter your password: ");
+        	}
+	    }
+	        
+        Server.insertUser(connection, email, name, surname, password);
+    }
 
     private static void addBook(Connection connection, int user_id) {
         Scanner scanner = new Scanner(System.in);
@@ -238,6 +283,9 @@ public class main {
         // Call the Server method to fetch and display all books along with their owners
         Server.viewFriendsBooks(connection, user_id);
     }
+    
+    
+    
     
 
 }

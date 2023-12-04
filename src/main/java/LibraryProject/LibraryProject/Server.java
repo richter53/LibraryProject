@@ -190,7 +190,54 @@ public class Server {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
     }
+    
+    
+    
+    public static void deleteUser(Connection connection, String userEmailToRemove) {
+    	int userIdToRemove = getUserID(connection, userEmailToRemove);
+
+        if (userIdToRemove != -1) {
+            // Delete associated books
+            deleteBooksForUser(connection, userIdToRemove);
+
+            String query = "DELETE FROM users WHERE id_user = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, userIdToRemove);
+
+                // Execute the update query
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("User removed successfully.");
+                } else {
+                    System.out.println("User removal failed.");
+                }
+            } catch (SQLException e) {
+                System.err.println("Error executing the query: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("User not found.");
+        }
+    }
+    
+    private static void deleteBooksForUser(Connection connection, int userId) {
+        String query = "DELETE FROM books WHERE id_user = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, userId);
+
+            // Execute the update query
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error deleting books for the user: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    
+    
     }
     
     
