@@ -172,17 +172,17 @@ public class Server {
 
           if (resultSet.next()) {
               System.out.println("Library - Books and Owners:");
+              System.out.println("\n************************************************************\n|                 Welcome to the Library!                  |");
               do {
                   String bookName = resultSet.getString("book_name");
                   String bookAuthor = resultSet.getString("book_author");
                   String ownerName = resultSet.getString("owner_name");
-                  System.out.println("\n**********************************************************\n|                 Welcome to the Library!                  |");
                   System.out.println("|                                                          |");
                   System.out.println("|    Book: " + bookName + " by " + bookAuthor + ", Owner: " + ownerName + "    |");
                   System.out.println("|                                                          |");
-                  System.out.println("************************************************************");
-
               } while (resultSet.next());
+              System.out.println("************************************************************");
+
           } else {
               System.out.println("The library is empty.");
           }

@@ -13,25 +13,28 @@ import java.util.Scanner;
 public class main {
 
     public static void main(String[] args) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
+    	Scanner scanner = new Scanner(System.in);
         int id_user;
 
         Connection connection = Server.establishConnection("jdbc:mysql://localhost:3306/mydb", "root", "");
-        
+
         id_user = menu1(connection);
         boolean is_admin = Server.checkAdmin(connection, id_user);
-        System.out.println(is_admin);
-        
-        /*String query = "SELECT * FROM users WHERE id_user = ?";
-    	resultset 
-    	premenna = Resultset.getboolean("spravca");
-    	if()*/
+
+        if (is_admin) {
+            adminMenu(connection, id_user);
+        } else {
+            System.out.println("Regular user. Exiting the program. Goodbye!");
+            System.exit(0);
+        }
 
     }
 
     // *************** MENU - LOG IN / SIGN IN ***************
     public static int menu1(Connection connection) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
+    	Scanner scanner = new Scanner(System.in);
+        int user_id = -1;
+
         while (true) {
             System.out.println("\n**********************************************\n| Welcome to the User Authentication System! |");
             System.out.println("|                                            |");
@@ -45,12 +48,11 @@ public class main {
 
             switch (choice) {
                 case "1":
-                    int user_id = logIn(connection);
-                    if (user_id == -1) {
-                    	break;
-                    } else {
-                    	mainMenu(connection, user_id);
-}
+                    user_id = logIn(connection);
+                    if (user_id != -1) {
+                        return user_id;  // Return user_id when successfully logged in
+                    }
+                    break;
                 case "2":
                     createAccount(connection);
                     break;
@@ -63,33 +65,90 @@ public class main {
         }
     }
     
+    // *************** MENU - MAIN MENU *************************
     public static void mainMenu(Connection connection, int user_id) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        while (true) {
+        boolean loggedIn = true;
+
+        while (loggedIn) {
             System.out.println("\n**********************************************\n| Welcome to the Book Management System!     |");
             System.out.println("|                                            |");
             System.out.println("|               1. Add a Book                |");
-            System.out.println("|           2. View Friends' Books           |");
-            System.out.println("|                3. Exit                     |");
+            System.out.println("|               2. View Friends' Books       |");
+            System.out.println("|               3. Logout                    |");
+            System.out.println("|               4. Exit                      |");
             System.out.println("**********************************************");
 
-            System.out.print("\nChoose an option (1/2/3): ");
+            System.out.print("\nChoose an option (1/2/3/4): ");
             String choice = scanner.next();
 
             switch (choice) {
                 case "1":
-                  addBook(connection, user_id);
+                    addBook(connection, user_id);
                     break;
                 case "2":
-                   viewFriendsBooks(connection, user_id);
+                    viewFriendsBooks(connection, user_id);
                     break;
                 case "3":
+                    // Logging out, break the loop to return to the login menu
+                    loggedIn = false;
+                    System.out.println("Logging out. Returning to the login menu.");
+                    break;
+                case "4":
                     System.out.println("Exiting the program. Goodbye!");
                     System.exit(0);
                 default:
                     System.out.println("Invalid option. Please choose again.");
             }
         }
+        menu1(connection);
+
+    }
+    
+    private static void adminMenu(Connection connection, int user_id) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        boolean adminLoggedIn = true;
+
+        while (adminLoggedIn) {
+            System.out.println("\n**********************************************\n|         Welcome to the Admin Menu!         |");
+            System.out.println("|                                            |");
+            System.out.println("|               1. Add a Book                |");
+            System.out.println("|               2. View Library              |");
+            System.out.println("|               3. Add User                  |");
+            System.out.println("|               4. Remove User               |");
+            System.out.println("|               5. Logout                    |");
+            System.out.println("|               6. Exit                      |");
+            System.out.println("**********************************************");
+
+            System.out.print("\nChoose an option (1/2/3/4/5/6): ");
+            String choice = scanner.next();
+
+            switch (choice) {
+                case "1":
+                    addBook(connection, user_id);
+                    break;
+                case "2":
+                    viewFriendsBooks(connection, user_id);  // Change to viewLibrary instead of viewFriendsBooks
+                    break;
+                case "3":
+                    //addUser(connection);
+                    break;
+                case "4":
+                    //removeUser(connection);
+                    break;
+                case "5":
+                    // Logging out, break the loop to return to the login menu
+                    adminLoggedIn = false;
+                    System.out.println("Logging out. Returning to the login menu.");
+                    break;
+                case "6":
+                    System.out.println("Exiting the program. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid option. Please choose again.");
+            }
+        }
+        menu1(connection);
     }
     
     
