@@ -49,8 +49,8 @@ public class main {
                     if (user_id == -1) {
                     	break;
                     } else {
-                    	return user_id;
-                    }
+                    	mainMenu(connection, user_id);
+}
                 case "2":
                     createAccount(connection);
                     break;
@@ -62,6 +62,38 @@ public class main {
             }
         }
     }
+    
+    public static void mainMenu(Connection connection, int user_id) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n**********************************************\n| Welcome to the Book Management System!     |");
+            System.out.println("|                                            |");
+            System.out.println("|               1. Add a Book                |");
+            System.out.println("|           2. View Friends' Books           |");
+            System.out.println("|                3. Exit                     |");
+            System.out.println("**********************************************");
+
+            System.out.print("\nChoose an option (1/2/3): ");
+            String choice = scanner.next();
+
+            switch (choice) {
+                case "1":
+                  addBook(connection, user_id);
+                    break;
+                case "2":
+                   viewFriendsBooks(connection, user_id);
+                    break;
+                case "3":
+                    System.out.println("Exiting the program. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid option. Please choose again.");
+            }
+        }
+    }
+    
+    
+    
     private static int logIn(Connection connection) {
         Scanner scanner = new Scanner(System.in);
         
@@ -124,6 +156,30 @@ public class main {
         Server.insertUser(connection, email, name, surname, password);
     }
 
+    private static void addBook(Connection connection, int user_id) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Add a Book");
+        System.out.print("Enter the name of the book: ");
+        String bookName = scanner.nextLine();
+        
+        System.out.print("Enter the author of the book: ");
+        String author = scanner.nextLine();
+        
+        System.out.print("Enter the genre of the book (1-Fiction, 2-Non-fiction, etc.): ");
+        int genre = scanner.nextInt();
+
+        // Call the Server method to add the book to the database
+        Server.addBook(connection, user_id, bookName, author, genre);
+        
+        System.out.println("Book added successfully!");
+    }
+    
+    private static void viewFriendsBooks(Connection connection, int user_id) {
+        // Call the Server method to fetch and display all books along with their owners
+        Server.viewFriendsBooks(connection, user_id);
+    }
+    
 
 }
 

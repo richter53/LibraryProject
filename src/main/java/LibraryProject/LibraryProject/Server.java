@@ -1,5 +1,5 @@
 package LibraryProject.LibraryProject;
-
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -142,4 +142,56 @@ public class Server {
         }
         return false;
     }
-}
+    
+    public static void addBook(Connection connection, int user_id, String bookName, String author, int genre) {
+        try {
+            String query = "INSERT INTO books (nazov, autor, zaner, id_user) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, bookName);
+                preparedStatement.setString(2, author);
+                preparedStatement.setInt(3, genre);
+                preparedStatement.setInt(4, user_id);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    public static void viewFriendsBooks(Connection connection, int user_id) {
+        try {
+        	 String query = "SELECT b.nazov AS book_name, b.autor AS book_author, " +
+                     "CONCAT(u.meno, ' ', u.priezvisko) AS owner_name " +
+                     "FROM books b " +
+                     "JOIN users u ON b.id_user = u.id_user " +
+                     "ORDER BY b.nazov";
+
+      try (Statement statement = connection.createStatement()) {
+          ResultSet resultSet = statement.executeQuery(query);
+
+          if (resultSet.next()) {
+              System.out.println("Library - Books and Owners:");
+              do {
+                  String bookName = resultSet.getString("book_name");
+                  String bookAuthor = resultSet.getString("book_author");
+                  String ownerName = resultSet.getString("owner_name");
+                  System.out.println("\n**********************************************************\n|                 Welcome to the Library!                  |");
+                  System.out.println("|                                                          |");
+                  System.out.println("|    Book: " + bookName + " by " + bookAuthor + ", Owner: " + ownerName + "    |");
+                  System.out.println("|                                                          |");
+                  System.out.println("************************************************************");
+
+              } while (resultSet.next());
+          } else {
+              System.out.println("The library is empty.");
+          }
+      }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    }
+    
+    
+    
