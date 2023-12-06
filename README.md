@@ -39,6 +39,9 @@ Sponsors:
 
 Screenshots:
 <img width="339" alt="image" src="https://github.com/richter53/LibraryProject/assets/82294079/0a0730f9-1d5f-4f60-8e2e-85fa4061d5e7">
+
+
+
 <img width="338" alt="image" src="https://github.com/richter53/LibraryProject/assets/82294079/9d290a95-6667-4335-832e-93635ed8e8d4">
 
 
