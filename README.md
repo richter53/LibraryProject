@@ -47,7 +47,7 @@ Base Login Menu:
 <img width="339" alt="image" src="https://github.com/richter53/LibraryProject/assets/82294079/0a0730f9-1d5f-4f60-8e2e-85fa4061d5e7">
 
 
-Main Menu:
+Administrators Main Menu:
 
 
 
